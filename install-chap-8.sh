@@ -15,9 +15,9 @@ pushd man-pages-5.08
 	make install
 popd
 
-rm -rf tcl8.6.10-sr
+rm -rf tcl8.6.10
 print_pck_and_dezip tcl8.6.10-src.tar.gz
-pushd tcl8.6.10-sr
+pushd tcl8.6.10
 	tar -xf ../tcl8.6.10-html.tar.gz --strip-components=1
 	SRCDIR=$(pwd)
 	cd unix
