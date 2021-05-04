@@ -9,6 +9,13 @@ print_pck_and_dezip() {
 }
 
 pass_function() {
+	echo "coucou"
+}
+
+read_input() {
+	echo "$1"
+	read -p "Press enter to continue..."
+}
 
 
 rm -rf man-pages-5.08
@@ -36,7 +43,7 @@ pushd tcl8.6.10
 		-e "s|$SRCDIR/pkgs/itcl4.2.0|/usr/include|" \
 		-i pkgs/itcl4.2.0/itclConfig.sh
 	unset SRCDIR
-#	make test
+	make test || read_input "tcl"
 	make install
 	chmod -v u+w /usr/lib/libtcl8.6.so
 	make install-private-headers
@@ -48,7 +55,7 @@ print_pck_and_dezip expect5.45.4.tar.gz
 pushd expect5.45.4
 	./configure --prefix=/usr --with-tcl=/usr/lib --enable-shared --mandir=/usr/share/man --with-tclinclude=/usr/include
 	make
-#	make test
+	make test || read_input "expect"
 	make install
 	ln -svf expect5.45.4/libexpect5.45.4.so /usr/lib
 popd
@@ -63,7 +70,7 @@ pushd dejagnu-1.6.2
 	make install
 	install -v -dm755 /usr/share/doc/dejagnu-1.6.2
 	install -v -m644 doc/dejagnu.{html,txt} /usr/share/doc/dejagnu-1.6.2
-#	make check
+	make check || read_input "dejagnu"
 popd
 
 
@@ -71,67 +78,67 @@ rm -rf iana-etc-20200821
 print_pck_and_dezip iana-etc-20200821.tar.gz
 
 pushd iana-etc-20200821
-	 cp services protocols /etc
+	cp services protocols /etc
 popd
 
 rm -rf glibc-2.32
 print_pck_and_dezip glibc-2.32.tar.xz
 
 pushd glibc-2.32
-	 patch -Np1 -i ../glibc-2.32-fhs-1.patch
-	 mkdir -v build
-	 cd build
+	patch -Np1 -i ../glibc-2.32-fhs-1.patch
+	mkdir -v build
+	cd build
 
-	 ../configure --prefix=/usr                   \
-		 --disable-werror                         \
-		 --enable-kernel=3.2                      \
-		 --enable-stack-protector=strong          \
-		 --with-headers=/usr/include              \
-		 libc_cv_slibdir=/lib
-	 make
-	 case $(uname -m) in
-		 i?86)   ln -sfnv $PWD/elf/ld-linux.so.2        /lib ;;
-		 x86_64) ln -sfnv $PWD/elf/ld-linux-x86-64.so.2 /lib ;;
-	 esac
-	 
-#	 make check
-	 touch /etc/ld.so.conf
-	 sed '/test-installation/s@$(PERL)@echo not running@' -i ../Makefile
-	 make install
-	 cp -v ../nscd/nscd.conf /etc/nscd.conf
-	 mkdir -pv /var/cache/nscd
-	 install -v -Dm644 ../nscd/nscd.tmpfiles /usr/lib/tmpfiles.d/nscd.conf
-	 install -v -Dm644 ../nscd/nscd.service /lib/systemd/system/nscd.service
-	 mkdir -pv /usr/lib/locale
-	 localedef -i POSIX -f UTF-8 C.UTF-8 2> /dev/null || true
-	 localedef -i cs_CZ -f UTF-8 cs_CZ.UTF-8
-	 localedef -i de_DE -f ISO-8859-1 de_DE
-	 localedef -i de_DE@euro -f ISO-8859-15 de_DE@euro
-	 localedef -i de_DE -f UTF-8 de_DE.UTF-8
-	 localedef -i el_GR -f ISO-8859-7 el_GR
-	 localedef -i en_GB -f UTF-8 en_GB.UTF-8
-	 localedef -i en_HK -f ISO-8859-1 en_HK
-	 localedef -i en_PH -f ISO-8859-1 en_PH
-	 localedef -i en_US -f ISO-8859-1 en_US
-	 localedef -i en_US -f UTF-8 en_US.UTF-8
-	 localedef -i es_MX -f ISO-8859-1 es_MX
-	 localedef -i fa_IR -f UTF-8 fa_IR
-	 localedef -i fr_FR -f ISO-8859-1 fr_FR
-	 localedef -i fr_FR@euro -f ISO-8859-15 fr_FR@euro
-	 localedef -i fr_FR -f UTF-8 fr_FR.UTF-8
-	 localedef -i it_IT -f ISO-8859-1 it_IT
-	 localedef -i it_IT -f UTF-8 it_IT.UTF-8
-	 localedef -i ja_JP -f EUC-JP ja_JP
-	 localedef -i ja_JP -f SHIFT_JIS ja_JP.SIJS 2> /dev/null || true
-	 localedef -i ja_JP -f UTF-8 ja_JP.UTF-8
-	 localedef -i ru_RU -f KOI8-R ru_RU.KOI8-R
-	 localedef -i ru_RU -f UTF-8 ru_RU.UTF-8
-	 localedef -i tr_TR -f UTF-8 tr_TR.UTF-8
-	 localedef -i zh_CN -f GB18030 zh_CN.GB18030
-	 localedef -i zh_HK -f BIG5-HKSCS zh_HK.BIG5-HKSCS
+	../configure --prefix=/usr                   \
+		--disable-werror                         \
+		--enable-kernel=3.2                      \
+		--enable-stack-protector=strong          \
+		--with-headers=/usr/include              \
+		libc_cv_slibdir=/lib
+	make
+	case $(uname -m) in
+		i?86)   ln -sfnv $PWD/elf/ld-linux.so.2        /lib ;;
+		x86_64) ln -sfnv $PWD/elf/ld-linux-x86-64.so.2 /lib ;;
+	esac
 
-	 make localedata/install-locales
-	 cat > /etc/nsswitch.conf << "EOF"
+	make check || read_input "glibc"
+	touch /etc/ld.so.conf
+	sed '/test-installation/s@$(PERL)@echo not running@' -i ../Makefile
+	make install
+	cp -v ../nscd/nscd.conf /etc/nscd.conf
+	mkdir -pv /var/cache/nscd
+	install -v -Dm644 ../nscd/nscd.tmpfiles /usr/lib/tmpfiles.d/nscd.conf
+	install -v -Dm644 ../nscd/nscd.service /lib/systemd/system/nscd.service
+	mkdir -pv /usr/lib/locale
+	localedef -i POSIX -f UTF-8 C.UTF-8 2> /dev/null || true
+	localedef -i cs_CZ -f UTF-8 cs_CZ.UTF-8
+	localedef -i de_DE -f ISO-8859-1 de_DE
+	localedef -i de_DE@euro -f ISO-8859-15 de_DE@euro
+	localedef -i de_DE -f UTF-8 de_DE.UTF-8
+	localedef -i el_GR -f ISO-8859-7 el_GR
+	localedef -i en_GB -f UTF-8 en_GB.UTF-8
+	localedef -i en_HK -f ISO-8859-1 en_HK
+	localedef -i en_PH -f ISO-8859-1 en_PH
+	localedef -i en_US -f ISO-8859-1 en_US
+	localedef -i en_US -f UTF-8 en_US.UTF-8
+	localedef -i es_MX -f ISO-8859-1 es_MX
+	localedef -i fa_IR -f UTF-8 fa_IR
+	localedef -i fr_FR -f ISO-8859-1 fr_FR
+	localedef -i fr_FR@euro -f ISO-8859-15 fr_FR@euro
+	localedef -i fr_FR -f UTF-8 fr_FR.UTF-8
+	localedef -i it_IT -f ISO-8859-1 it_IT
+	localedef -i it_IT -f UTF-8 it_IT.UTF-8
+	localedef -i ja_JP -f EUC-JP ja_JP
+	localedef -i ja_JP -f SHIFT_JIS ja_JP.SIJS 2> /dev/null || true
+	localedef -i ja_JP -f UTF-8 ja_JP.UTF-8
+	localedef -i ru_RU -f KOI8-R ru_RU.KOI8-R
+	localedef -i ru_RU -f UTF-8 ru_RU.UTF-8
+	localedef -i tr_TR -f UTF-8 tr_TR.UTF-8
+	localedef -i zh_CN -f GB18030 zh_CN.GB18030
+	localedef -i zh_HK -f BIG5-HKSCS zh_HK.BIG5-HKSCS
+
+	make localedata/install-locales
+	cat > /etc/nsswitch.conf << "EOF"
 # Begin /etc/nsswitch.conf
 passwd: files
 group: files
@@ -144,31 +151,32 @@ ethers: files
 rpc: files
 # End /etc/nsswitch.conf
 EOF
-	 tar -xf ../../tzdata2020a.tar.gz
-	 ZONEINFO=/usr/share/zoneinfo
-	 mkdir -pv $ZONEINFO/{posix,right}
-	 for tz in etcetera southamerica northamerica europe africa antarctica  \
-		 asia australasia backward pacificnew systemv; do
-			  zic -L /dev/null   -d $ZONEINFO       ${tz}
-			  zic -L /dev/null   -d $ZONEINFO/posix ${tz}
-			  zic -L leapseconds -d $ZONEINFO/right ${tz}
-	 done
-	 cp -v zone.tab zone1970.tab iso3166.tab $ZONEINFO
-	 zic -d $ZONEINFO -p America/New_York
-	 unset ZONEINFO
-	 tzselect
-	 ln -sfv /usr/share/zoneinfo/Europe/Paris /etc/localtime
-	 cat > /etc/ld.so.conf << "EOF"
+	tar -xf ../../tzdata2020a.tar.gz
+	ZONEINFO=/usr/share/zoneinfo
+	mkdir -pv $ZONEINFO/{posix,right}
+	for tz in etcetera southamerica northamerica europe africa antarctica  \
+	asia australasia backward pacificnew systemv; do
+		zic -L /dev/null   -d $ZONEINFO       ${tz}
+		zic -L /dev/null   -d $ZONEINFO/posix ${tz}
+		zic -L leapseconds -d $ZONEINFO/right ${tz}
+	done
+	cp -v zone.tab zone1970.tab iso3166.tab $ZONEINFO
+	zic -d $ZONEINFO -p America/New_York
+	unset ZONEINFO
+
+	tzselect
+	ln -sfv /usr/share/zoneinfo/Europe/Paris /etc/localtime
+	cat > /etc/ld.so.conf << "EOF"
 # Begin /etc/ld.so.conf
 /usr/local/lib
 /opt/lib
 EOF
-	 cat >> /etc/ld.so.conf << "EOF"
+	cat >> /etc/ld.so.conf << "EOF"
 # Add an include directory
 include /etc/ld.so.conf.d/*.conf
 EOF
 
-	 mkdir -pv /etc/ld.so.conf.d
+	mkdir -pv /etc/ld.so.conf.d
 popd
 
 
@@ -176,12 +184,12 @@ rm -rf zlib-1.2.11
 print_pck_and_dezip zlib-1.2.11.tar.xz
 
 pushd zlib-1.2.11
-	 ./configure --prefix=/usr
-	 make
-#	 make check
-	 make install
-	 mv -v /usr/lib/libz.so.* /lib
-	 ln -sfv ../../lib/$(readlink /usr/lib/libz.so) /usr/lib/libz.so
+	./configure --prefix=/usr
+	make
+	make check || read_input "zlib"
+	make install
+	mv -v /usr/lib/libz.so.* /lib
+	ln -sfv ../../lib/$(readlink /usr/lib/libz.so) /usr/lib/libz.so
 popd
 
 
@@ -189,19 +197,19 @@ rm -rf bzip2-1.0.8
 print_pck_and_dezip bzip2-1.0.8.tar.gz
 
 pushd bzip2-1.0.8
-	 patch -Np1 -i ../bzip2-1.0.8-install_docs-1.patch
-	 sed -i 's@\(ln -s -f \)$(PREFIX)/bin/@\1@' Makefile
-	 sed -i "s@(PREFIX)/man@(PREFIX)/share/man@g" Makefile
-	 make -f Makefile-libbz2_so
-	 make clean
-	 make
-	 make PREFIX=/usr install
-	 cp -v bzip2-shared /bin/bzip2
-	 cp -av libbz2.so* /lib
-	 ln -svf ../../lib/libbz2.so.1.0 /usr/lib/libbz2.so
-	 rm -v /usr/bin/{bunzip2,bzcat,bzip2}
-	 ln -svf bzip2 /bin/bunzip2
-	 ln -svf bzip2 /bin/bzcat
+	patch -Np1 -i ../bzip2-1.0.8-install_docs-1.patch
+	sed -i 's@\(ln -s -f \)$(PREFIX)/bin/@\1@' Makefile
+	sed -i "s@(PREFIX)/man@(PREFIX)/share/man@g" Makefile
+	make -f Makefile-libbz2_so
+	make clean
+	make
+	make PREFIX=/usr install
+	cp -v bzip2-shared /bin/bzip2
+	cp -av libbz2.so* /lib
+	ln -sv ../../lib/libbz2.so.1.0 /usr/lib/libbz2.so
+	rm -v /usr/bin/{bunzip2,bzcat,bzip2}
+	ln -sv bzip2 /bin/bunzip2
+	ln -sv bzip2 /bin/bzcat
 popd
 
 
@@ -213,7 +221,7 @@ pushd xz-5.2.5
 		--disable-static		 \
 		--docdir=/usr/share/doc/xz-5.2.5
 	make
-#	make check
+	make check || read_input "xz"
 	make install
 	mv -v   /usr/bin/{lzma,unlzma,lzcat,xz,unxz,xzcat} /bin
 	mv -v /usr/lib/liblzma.so.* /lib
@@ -238,7 +246,7 @@ print_pck_and_dezip file-5.39.tar.gz
 pushd file-5.39
 	./configure --prefix=/usr
 	make
-#	make check
+	make check || read_input "file"
 	make install
 popd
 
@@ -270,7 +278,7 @@ pushd m4-1.4.18
 	echo "#define _IO_IN_BACKUP 0x100" >> lib/stdio-impl.h
 	./configure --prefix=/usr
 	make
-#	make check
+	make check || read_input "m4"
 	make install
 popd
 
@@ -281,7 +289,7 @@ print_pck_and_dezip bc-3.1.5.tar.xz
 pushd bc-3.1.5
 	PREFIX=/usr CC=gcc CFLAGS="-std=c99" ./configure.sh -G -O3
 	make
-#	make test
+	make test || read_input "bc"
 	make install
 popd
 
@@ -292,7 +300,7 @@ print_pck_and_dezip flex-2.6.4.tar.gz
 pushd flex-2.6.4
 	./configure --prefix=/usr --docdir=/usr/share/doc/flex-2.6.4
 	make
-#	make check
+	make check || read_input "flex"
 	make install
 	ln -sv flex /usr/bin/lex
 popd
@@ -302,6 +310,7 @@ print_pck_and_dezip binutils-2.35.tar.xz
 
 pushd binutils-2.35
 	expect -c "spawn ls"
+	read_input "binutils"
 	sed -i '/@\tincremental_copy/d' gold/testsuite/Makefile.in
 	mkdir -v build
 	cd build
@@ -309,12 +318,12 @@ pushd binutils-2.35
 		--enable-gold       \
 		--enable-ld=default \
 		--enable-plugins    \
-       		--enable-shared     \
-    	    	--disable-werror    \
-        	--enable-64-bit-bfd \
-	        --with-system-zlib
+		--enable-shared     \
+		--disable-werror    \
+		--enable-64-bit-bfd \
+		--with-system-zlib
 	make tooldir=/usr
-#	make -k check
+	make -k check || read_input "binutils"
 	make tooldir=/usr install
 popd
 
@@ -339,13 +348,13 @@ rm -rf mpfr-4.1.0
 print_pck_and_dezip mpfr-4.1.0.tar.xz
 
 pushd mpfr-4.1.0
-	./configure --prefix=/usr        \
-		--disable-static     \
+	./configure --prefix=/usr \
+		--disable-static \
         --enable-thread-safe \
         --docdir=/usr/share/doc/mpfr-4.1.0
 	make
 	make html
-#	make check
+	make check || read_input "mpfr"
 	make install
 	make install-html
 popd
@@ -354,12 +363,12 @@ rm -rf mpc-1.1.0
 print_pck_and_dezip mpc-1.1.0.tar.gz
 
 pushd mpc-1.1.0
-	./configure --prefix=/usr    \
+	./configure --prefix=/usr \
 		--disable-static \
 		--docdir=/usr/share/doc/mpc-1.1.0
 	make
 	make html
-#	make check
+	make check || read_input "mpc"
 	make install
 	make install-html
 popd
@@ -374,7 +383,7 @@ pushd attr-2.4.48
         --sysconfdir=/etc \
         --docdir=/usr/share/doc/attr-2.4.48
 	make
-#	make check
+	make check || read_input "attr"
 	make install
 	mv -v /usr/lib/libattr.so.* /lib
 	ln -sfv ../../lib/$(readlink /usr/lib/libattr.so) /usr/lib/libattr.so
@@ -400,7 +409,7 @@ print_pck_and_dezip libcap-2.42.tar.xz
 pushd libcap-2.42
 	sed -i '/install -m.*STACAPLIBNAME/d' libcap/Makefile
 	make lib=lib
-#	make test
+	make test || read_input "libcap"
 	make lib=lib PKGCONFIGDIR=/usr/lib/pkgconfig install
 	chmod -v 755 /lib/libcap.so.2.42
 	mv -v /lib/libpsx.a /usr/lib
@@ -421,6 +430,7 @@ pushd shadow-4.8.1
 	sed -e 's:#ENCRYPT_METHOD DES:ENCRYPT_METHOD SHA512:' \
 		-e 's:/var/spool/mail:/var/mail:'                 \
 		-i etc/login.defs
+	sed -i 's:DICTPATH.*:DICTPATH\t/lib/cracklib/pw_dict:' etc/login.defs
 	sed -i 's/1000/999/' etc/useradd
 	touch /usr/bin/passwd
 	./configure --sysconfdir=/etc \
@@ -430,7 +440,7 @@ pushd shadow-4.8.1
 	pwconv
 	grpconv
 	sed -i 's/yes/no/' /etc/default/useradd
-	echo "password" | passwd root
+	passwd root
 popd
 
 
@@ -442,19 +452,20 @@ pushd gcc-10.2.0
 		x86_64)
 			sed -e '/m64=/s/lib64/lib/' \
 				-i.orig gcc/config/i386/t-linux64
-	;; esac
+		;;
+	esac
 	mkdir -v build
 	cd build
-	../configure --prefix=/usr            \
-		LD=ld                    \
+	../configure --prefix=/usr \
+		LD=ld \
 		--enable-languages=c,c++ \
-		--disable-multilib       \
-		--disable-bootstrap      \
+		--disable-multilib \
+		--disable-bootstrap \
 		--with-system-zlib
 	make
 	ulimit -s 32768
 	chown -Rv tester .
-	su tester -c "PATH=$PATH make -k check"
+	su tester -c "PATH=$PATH make -k check" >> log_chap_8.log
 	../contrib/test_summary
 	make install
 	rm -rf /usr/lib/gcc/$(gcc -dumpmachine)/10.2.0/include-fixed/bits/
@@ -475,9 +486,8 @@ pushd gcc-10.2.0
 	rm -v dummy.c a.out dummy.log
 	mkdir -pv /usr/share/gdb/auto-load/usr/lib
 	mv -v /usr/lib/*gdb.py /usr/share/gdb/auto-load/usr/lib
-	read -p "Press enter to continue..."
+	read_input "check gcc"
 popd
-     
 
 rm -rf pkg-config-0.29.2
 print_pck_and_dezip pkg-config-0.29.2.tar.gz
@@ -488,7 +498,7 @@ pushd pkg-config-0.29.2
 		--disable-host-tool        \
 		--docdir=/usr/share/doc/pkg-config-0.29.2
 	make
-#	make check
+	make check || read_input "pkg-config"
 	make install
 popd
 
@@ -509,15 +519,26 @@ pushd ncurses-6.2
 	mv -v /usr/lib/libncursesw.so.6* /lib
 	ln -sfv ../../lib/$(readlink /usr/lib/libncursesw.so) /usr/lib/libncursesw.so
 	for lib in ncurses form panel menu ; do
-		rm -vf                    /usr/lib/lib${lib}.so
+		rm -vf /usr/lib/lib${lib}.so
 		echo "INPUT(-l${lib}w)" > /usr/lib/lib${lib}.so
-		ln -sfv ${lib}w.pc        /usr/lib/pkgconfig/${lib}.pc
+		ln -sfv ${lib}w.pc /usr/lib/pkgconfig/${lib}.pc
 	done
-	rm -vf                     /usr/lib/libcursesw.so
+	rm -vf /usr/lib/libcursesw.so
 	echo "INPUT(-lncursesw)" > /usr/lib/libcursesw.so
 	ln -sfv libncurses.so      /usr/lib/libcurses.so
-	mkdir -v       /usr/share/doc/ncurses-6.2
+	mkdir -v /usr/share/doc/ncurses-6.2
 	cp -v -R doc/* /usr/share/doc/ncurses-6.2
+
+	# bonus
+	make distclean
+	./configure --prefix=/usr    \
+		--with-shared    \
+		--without-normal \
+		--without-debug  \
+		--without-cxx-binding \
+		--with-abi-version=5
+	make sources libs
+	cp -av lib/lib*.so.5* /usr/lib
 popd
 
 rm -rf sed-4.8
@@ -528,7 +549,7 @@ pushd sed-4.8
 	make
 	make html
 	chown -Rv tester .
-#	su tester -c "PATH=$PATH make check"
+	su tester -c "PATH=$PATH make check"
 	make install
 	install -d -m755           /usr/share/doc/sed-4.8
 	install -m644 doc/sed.html /usr/share/doc/sed-4.8
@@ -554,7 +575,7 @@ pushd gettext-0.21
 		--disable-static \
         --docdir=/usr/share/doc/gettext-0.21
 	make
-#	make check
+	make check || read_input "gettext"
 	make install
 	chmod -v 0755 /usr/lib/preloadable_libintl.so
 popd
@@ -565,7 +586,7 @@ print_pck_and_dezip bison-3.7.1.tar.xz
 pushd bison-3.7.1
 	./configure --prefix=/usr --docdir=/usr/share/doc/bison-3.7.1
 	make
-#	make check
+	make check || read_input "bison"
 	make install
 popd
 
@@ -575,7 +596,7 @@ print_pck_and_dezip grep-3.4.tar.xz
 pushd grep-3.4
 	./configure --prefix=/usr --bindir=/bin
 	make
-#	make check
+	make check || read_input "grep"
 	make install
 popd
 
@@ -585,9 +606,9 @@ print_pck_and_dezip bash-5.0.tar.gz
 
 pushd bash-5.0
 	patch -Np1 -i ../bash-5.0-upstream_fixes-1.patch
-	./configure --prefix=/usr                    \
+	./configure --prefix=/usr \
 		--docdir=/usr/share/doc/bash-5.0 \
-		--without-bash-malloc            \
+		--without-bash-malloc \
 		--with-installed-readline
 	make
 	chown -Rv tester .
@@ -596,9 +617,9 @@ PATH=$PATH make tests < $(tty)
 EOF
 	make install
 	mv -vf /usr/bin/bash /bin
-	exec /bin/bash --login +h
+	# exec /bin/bash --login +h
+	read_input "launch 'exec /bin/bash --login +h'"
 popd
-}
 
 rm -rf libtool-2.4.6
 print_pck_and_dezip libtool-2.4.6.tar.xz
@@ -606,7 +627,7 @@ print_pck_and_dezip libtool-2.4.6.tar.xz
 pushd libtool-2.4.6
 	./configure --prefix=/usr
 	make
-#	make check
+	make check || read_input "libtool"
 	make install
 popd
 
@@ -619,7 +640,7 @@ pushd gdbm-1.18.1
 		--disable-static \
         --enable-libgdbm-compat
 	make
-#	make check
+	make check || read_input "gdbm"
 	make install
 popd
 
@@ -629,7 +650,7 @@ print_pck_and_dezip gperf-3.1.tar.gz
 pushd gperf-3.1
 	./configure --prefix=/usr --docdir=/usr/share/doc/gperf-3.1
 	make
-#	make -j1 check
+	make -j1 check
 	make install
 popd
 
@@ -642,11 +663,10 @@ pushd expat-2.2.9
 		--disable-static \
 		--docdir=/usr/share/doc/expat-2.2.9
 	make
-#	make check
+	make check || read_input "expat"
 	make install
 	install -v -m644 doc/*.{html,png,css} /usr/share/doc/expat-2.2.9
 popd
-
 
 rm -rf inetutils-1.9.4
 print_pck_and_dezip inetutils-1.9.4.tar.xz
@@ -662,13 +682,11 @@ pushd inetutils-1.9.4
 		--disable-rsh        \
 		--disable-servers
 	make
-#	make check
+	make check || read_input "inetutils"
 	make install
 	mv -v /usr/bin/{hostname,ping,ping6,traceroute} /bin
 	mv -v /usr/bin/ifconfig /sbin
 popd
-
-
 
 rm -rf perl-5.32.0
 print_pck_and_dezip perl-5.32.0.tar.xz
@@ -691,7 +709,7 @@ pushd perl-5.32.0
 		-Duseshrplib                                 \
 		-Dusethreads
 	make
-#	make test
+	make test || read_input "perl"
 	make install
 	unset BUILD_ZLIB BUILD_BZIP2
 popd
@@ -703,7 +721,7 @@ print_pck_and_dezip XML-Parser-2.46.tar.gz
 pushd XML-Parser-2.46
 	perl Makefile.PL
 	make
-#	make test
+	make test || read_input "tcl"
 	make install
 popd
 
@@ -714,7 +732,7 @@ pushd intltool-0.51.0
 	sed -i 's:\\\${:\\\$\\{:' intltool-update.in
 	./configure --prefix=/usr
 	make
-#	make check
+	make check || read_input "intltool"
 	make install
 	install -v -Dm644 doc/I18N-HOWTO /usr/share/doc/intltool-0.51.0/I18N-HOWTO
 popd
@@ -726,7 +744,7 @@ pushd autoconf-2.69
 	sed -i '361 s/{/\\{/' bin/autoscan.in
 	./configure --prefix=/usr
 	make
-#	make check
+	make check || read_input "autoconf"
 	make install
 popd
 
@@ -737,7 +755,7 @@ pushd automake-1.16.2
 	sed -i "s/''/etags/" t/tags-lisp-space.sh
 	./configure --prefix=/usr --docdir=/usr/share/doc/automake-1.16.2
 	make
-#	make -j4 check
+	make -j4 check  || read_input "automake"
 	make install
 popd
 
@@ -766,7 +784,7 @@ print_pck_and_dezip elfutils-0.180.tar.bz2
 pushd elfutils-0.180
 	./configure --prefix=/usr --disable-debuginfod --libdir=/lib
 	make
-#	make check
+	make check
 	make -C libelf install
 	install -vm644 config/libelf.pc /usr/lib/pkgconfig
 	rm /lib/libelf.a
@@ -779,7 +797,7 @@ print_pck_and_dezip libffi-3.3.tar.gz
 pushd libffi-3.3
 	./configure --prefix=/usr --disable-static --with-gcc-arch=native
 	make
-#	make check
+	make check || read_input "libffi"
 	make install
 popd
 
@@ -794,7 +812,7 @@ pushd openssl-1.1.1g
         shared                \
         zlib-dynamic
 	make
-#	make test
+	make test || read_input "openssl"
 	sed -i '/INSTALL_LIBS/s/libcrypto.a libssl.a//' Makefile
 	make MANSUFFIX=ssl install
 	mv -v /usr/share/doc/openssl /usr/share/doc/openssl-1.1.1g
@@ -870,7 +888,7 @@ pushd coreutils-8.32
 	make NON_ROOT_USERNAME=tester check-root
 	echo "dummy:x:102:tester" >> /etc/group
 	chown -Rv tester .
-#	su tester -c "PATH=$PATH make RUN_EXPENSIVE_TESTS=yes check"
+	su tester -c "PATH=$PATH make RUN_EXPENSIVE_TESTS=yes check"
 	sed -i '/dummy/d' /etc/group
 	make install
 	mv -v /usr/bin/{cat,chgrp,chmod,chown,cp,date,dd,df,echo} /bin
@@ -888,7 +906,7 @@ print_pck_and_dezip check-0.15.2.tar.gz
 pushd check-0.15.2
 	./configure --prefix=/usr --disable-static
 	make
-#	make check
+	make check || read_input "check"
 	make docdir=/usr/share/doc/check-0.15.2 install
 popd
 
@@ -898,7 +916,7 @@ print_pck_and_dezip diffutils-3.7.tar.xz
 pushd diffutils-3.7
 	./configure --prefix=/usr
 	make
-#	make check
+	make check || read_input "diffutils"
 	make install
 popd
 
@@ -909,7 +927,7 @@ pushd gawk-5.1.0
 	sed -i 's/extras//' Makefile.in
 	./configure --prefix=/usr
 	make
-#	make check
+	make check || read_input "gawk"
 	make install
 	mkdir -vf /usr/share/doc/gawk-5.1.0
 	cp -v doc/{awkforai.txt,*.{eps,pdf,jpg}} /usr/share/doc/gawk-5.1.0
@@ -923,7 +941,7 @@ pushd findutils-4.7.0
 	./configure --prefix=/usr --localstatedir=/var/lib/locate
 	make
 	chown -Rv tester .
-#	su tester -c "PATH=$PATH make check"
+	su tester -c "PATH=$PATH make check" || read_input "findutils"
 	make install
 	mv -v /usr/bin/find /bin
 	sed -i 's|find:=${BINDIR}|find:=/bin|' /usr/bin/updatedb
@@ -968,7 +986,7 @@ print_pck_and_dezip gzip-1.10.tar.xz
 pushd gzip-1.10
 	./configure --prefix=/usr
 	make
-#	make check
+	make check || read_input "gzip"
 	make install
 	mv -v /usr/bin/gzip /bin
 popd
@@ -994,7 +1012,7 @@ pushd kbd-2.3.0
 	sed -i 's/resizecons.8 //' docs/man/man8/Makefile.in
 	./configure --prefix=/usr --disable-vlock
 	make
-#	make check
+	make check || read_input "kdb"
 	make install
 	rm -v /usr/lib/libtswrap.{a,la,so*}
 	mkdir -vf            /usr/share/doc/kbd-2.3.0
@@ -1007,7 +1025,7 @@ print_pck_and_dezip libpipeline-1.5.3.tar.gz
 pushd libpipeline-1.5.3
 	./configure --prefix=/usr
 	make
-#	make check
+	make check || read_input "libpipeline"
 	make install
 popd
 
@@ -1018,7 +1036,7 @@ print_pck_and_dezip make-4.3.tar.gz
 pushd make-4.3
 	./configure --prefix=/usr
 	make
-#	make check
+	make check || read_input "make"
 	make install
 popd
 
@@ -1029,7 +1047,7 @@ print_pck_and_dezip patch-2.7.6.tar.xz
 pushd patch-2.7.6
 	./configure --prefix=/usr
 	make
-#	make check
+	make check || read_input "patch"
 	make install
 popd
 
@@ -1048,7 +1066,7 @@ pushd man-db-2.9.3
         --with-vgrind=/usr/bin/vgrind        \
         --with-grap=/usr/bin/grap
 	make
-#	make check
+	make check || read_input "man-db"
 	make install
 popd
 
@@ -1061,7 +1079,7 @@ pushd tar-1.32
 		./configure --prefix=/usr \
 		--bindir=/bin
 	make
-#	make check
+	make check || read_input "tar"
 	make install
 	make -C doc install-html docdir=/usr/share/doc/tar-1.32
 popd
@@ -1072,7 +1090,7 @@ print_pck_and_dezip texinfo-6.7.tar.xz
 pushd texinfo-6.7
 	./configure --prefix=/usr --disable-static
 	make
-#	make check
+	make check || read_input "texinfo"
 	make install
 	make TEXMF=/usr/share/texmf install-tex
 	pushd /usr/share/info
@@ -1113,7 +1131,6 @@ if (&term == "xterm") || (&term == "putty")
 endif
 " End /etc/vimrc
 EOF
-	vim
 popd
 
 
@@ -1136,22 +1153,22 @@ pushd systemd-246
 		-Dbuildtype=release           \
 		-Ddefault-dnssec=no           \
 		-Dfirstboot=false             \
-      	-Dinstall-tests=false         \
-      	-Dkmod-path=/bin/kmod         \
-      	-Dldconfig=false              \
-      	-Dmount-path=/bin/mount       \
-      	-Drootprefix=                 \
-      	-Drootlibdir=/lib             \
-      	-Dsplit-usr=true              \
-      	-Dsulogin-path=/sbin/sulogin  \
-      	-Dsysusers=false              \
-      	-Dumount-path=/bin/umount     \
-      	-Db_lto=false                 \
-      	-Drpmmacrosdir=no             \
-      	-Dhomed=false                 \
-      	-Duserdb=false                \
-      	-Dman=true                    \
-      	-Ddocdir=/usr/share/doc/systemd-246 \
+		-Dinstall-tests=false         \
+		-Dkmod-path=/bin/kmod         \
+		-Dldconfig=false              \
+		-Dmount-path=/bin/mount       \
+		-Drootprefix=                 \
+		-Drootlibdir=/lib             \
+		-Dsplit-usr=true              \
+		-Dsulogin-path=/sbin/sulogin  \
+		-Dsysusers=false              \
+		-Dumount-path=/bin/umount     \
+		-Db_lto=false                 \
+		-Drpmmacrosdir=no             \
+		-Dhomed=false                 \
+		-Duserdb=false                \
+		-Dman=true                    \
+		-Ddocdir=/usr/share/doc/systemd-246 \
 		..
 	LANG=en_US.UTF-8 ninja
 	LANG=en_US.UTF-8 ninja install
@@ -1195,7 +1212,7 @@ pushd procps-ng-3.3.16
 		--disable-kill                           \
 		--with-systemd
 	make
-#	make check
+	make check || read_input "procps-ng"
 	make install
 	mv -v /usr/lib/libprocps.so.* /lib
 	ln -sfv ../../lib/$(readlink /usr/lib/libprocps.so) /usr/lib/libprocps.so
@@ -1220,7 +1237,7 @@ pushd util-linux-2.36
 		--without-python
 	make
 	chown -Rv tester .
-#	su tester -c "make -k check"
+	su tester -c "make -k check" || read_input "util-linux"
 	make install
 popd
 
@@ -1241,7 +1258,7 @@ pushd e2fsprogs-1.45.6
 		--disable-uuidd         \
 		--disable-fsck
 	make
-#	make check
+	make check || read_input "e2fsprogs"
 	make install
 	chmod -v u+w /usr/lib/{libcom_err,libe2p,libext2fs,libss}.a
 	gunzip -v /usr/share/info/libext2fs.info.gz
@@ -1249,5 +1266,4 @@ pushd e2fsprogs-1.45.6
 	makeinfo -o      doc/com_err.info ../lib/et/com_err.texinfo
 	install -v -m644 doc/com_err.info /usr/share/info
 	install-info --dir-file=/usr/share/info/dir /usr/share/info/com_err.info
-	rm -rf /tmp/*
 popd
