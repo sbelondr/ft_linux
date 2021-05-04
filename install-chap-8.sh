@@ -8,6 +8,8 @@ print_pck_and_dezip() {
 	tar -xf $1
 }
 
+pass_function() {
+
 
 rm -rf man-pages-5.08
 print_pck_and_dezip man-pages-5.08.tar.xz
@@ -34,7 +36,7 @@ pushd tcl8.6.10
 		-e "s|$SRCDIR/pkgs/itcl4.2.0|/usr/include|" \
 		-i pkgs/itcl4.2.0/itclConfig.sh
 	unset SRCDIR
-	make test
+#	make test
 	make install
 	chmod -v u+w /usr/lib/libtcl8.6.so
 	make install-private-headers
@@ -46,7 +48,7 @@ print_pck_and_dezip expect5.45.4.tar.gz
 pushd expect5.45.4
 	./configure --prefix=/usr --with-tcl=/usr/lib --enable-shared --mandir=/usr/share/man --with-tclinclude=/usr/include
 	make
-	make test
+#	make test
 	make install
 	ln -svf expect5.45.4/libexpect5.45.4.so /usr/lib
 popd
@@ -61,7 +63,7 @@ pushd dejagnu-1.6.2
 	make install
 	install -v -dm755 /usr/share/doc/dejagnu-1.6.2
 	install -v -m644 doc/dejagnu.{html,txt} /usr/share/doc/dejagnu-1.6.2
-	make check
+#	make check
 popd
 
 
@@ -74,6 +76,7 @@ popd
 
 rm -rf glibc-2.32
 print_pck_and_dezip glibc-2.32.tar.xz
+
 pushd glibc-2.32
 	 patch -Np1 -i ../glibc-2.32-fhs-1.patch
 	 mkdir -v build
@@ -91,7 +94,7 @@ pushd glibc-2.32
 		 x86_64) ln -sfnv $PWD/elf/ld-linux-x86-64.so.2 /lib ;;
 	 esac
 	 
-	 make check
+#	 make check
 	 touch /etc/ld.so.conf
 	 sed '/test-installation/s@$(PERL)@echo not running@' -i ../Makefile
 	 make install
@@ -175,7 +178,7 @@ print_pck_and_dezip zlib-1.2.11.tar.xz
 pushd zlib-1.2.11
 	 ./configure --prefix=/usr
 	 make
-	 make check
+#	 make check
 	 make install
 	 mv -v /usr/lib/libz.so.* /lib
 	 ln -sfv ../../lib/$(readlink /usr/lib/libz.so) /usr/lib/libz.so
@@ -195,10 +198,10 @@ pushd bzip2-1.0.8
 	 make PREFIX=/usr install
 	 cp -v bzip2-shared /bin/bzip2
 	 cp -av libbz2.so* /lib
-	 ln -sv ../../lib/libbz2.so.1.0 /usr/lib/libbz2.so
+	 ln -svf ../../lib/libbz2.so.1.0 /usr/lib/libbz2.so
 	 rm -v /usr/bin/{bunzip2,bzcat,bzip2}
-	 ln -sv bzip2 /bin/bunzip2
-	 ln -sv bzip2 /bin/bzcat
+	 ln -svf bzip2 /bin/bunzip2
+	 ln -svf bzip2 /bin/bzcat
 popd
 
 
@@ -210,7 +213,7 @@ pushd xz-5.2.5
 		--disable-static		 \
 		--docdir=/usr/share/doc/xz-5.2.5
 	make
-	make check
+#	make check
 	make install
 	mv -v   /usr/bin/{lzma,unlzma,lzcat,xz,unxz,xzcat} /bin
 	mv -v /usr/lib/liblzma.so.* /lib
@@ -235,7 +238,7 @@ print_pck_and_dezip file-5.39.tar.gz
 pushd file-5.39
 	./configure --prefix=/usr
 	make
-	make check
+#	make check
 	make install
 popd
 
@@ -267,7 +270,7 @@ pushd m4-1.4.18
 	echo "#define _IO_IN_BACKUP 0x100" >> lib/stdio-impl.h
 	./configure --prefix=/usr
 	make
-	make check
+#	make check
 	make install
 popd
 
@@ -278,7 +281,7 @@ print_pck_and_dezip bc-3.1.5.tar.xz
 pushd bc-3.1.5
 	PREFIX=/usr CC=gcc CFLAGS="-std=c99" ./configure.sh -G -O3
 	make
-	make test
+#	make test
 	make install
 popd
 
@@ -289,7 +292,7 @@ print_pck_and_dezip flex-2.6.4.tar.gz
 pushd flex-2.6.4
 	./configure --prefix=/usr --docdir=/usr/share/doc/flex-2.6.4
 	make
-	make check
+#	make check
 	make install
 	ln -sv flex /usr/bin/lex
 popd
@@ -306,12 +309,12 @@ pushd binutils-2.35
 		--enable-gold       \
 		--enable-ld=default \
 		--enable-plugins    \
-        --enable-shared     \
-        --disable-werror    \
-        --enable-64-bit-bfd \
-        --with-system-zlib
+       		--enable-shared     \
+    	    	--disable-werror    \
+        	--enable-64-bit-bfd \
+	        --with-system-zlib
 	make tooldir=/usr
-	make -k check
+#	make -k check
 	make tooldir=/usr install
 popd
 
@@ -342,7 +345,7 @@ pushd mpfr-4.1.0
         --docdir=/usr/share/doc/mpfr-4.1.0
 	make
 	make html
-	make check
+#	make check
 	make install
 	make install-html
 popd
@@ -356,7 +359,7 @@ pushd mpc-1.1.0
 		--docdir=/usr/share/doc/mpc-1.1.0
 	make
 	make html
-	make check
+#	make check
 	make install
 	make install-html
 popd
@@ -371,7 +374,7 @@ pushd attr-2.4.48
         --sysconfdir=/etc \
         --docdir=/usr/share/doc/attr-2.4.48
 	make
-	make check
+#	make check
 	make install
 	mv -v /usr/lib/libattr.so.* /lib
 	ln -sfv ../../lib/$(readlink /usr/lib/libattr.so) /usr/lib/libattr.so
@@ -397,7 +400,7 @@ print_pck_and_dezip libcap-2.42.tar.xz
 pushd libcap-2.42
 	sed -i '/install -m.*STACAPLIBNAME/d' libcap/Makefile
 	make lib=lib
-	make test
+#	make test
 	make lib=lib PKGCONFIGDIR=/usr/lib/pkgconfig install
 	chmod -v 755 /lib/libcap.so.2.42
 	mv -v /lib/libpsx.a /usr/lib
@@ -430,6 +433,7 @@ pushd shadow-4.8.1
 	echo "password" | passwd root
 popd
 
+
 rm -rf gcc-10.2.0
 print_pck_and_dezip gcc-10.2.0.tar.xz
 
@@ -444,9 +448,9 @@ pushd gcc-10.2.0
 	../configure --prefix=/usr            \
 		LD=ld                    \
 		--enable-languages=c,c++ \
-        --disable-multilib       \
-        --disable-bootstrap      \
-        --with-system-zlib
+		--disable-multilib       \
+		--disable-bootstrap      \
+		--with-system-zlib
 	make
 	ulimit -s 32768
 	chown -Rv tester .
@@ -456,7 +460,7 @@ pushd gcc-10.2.0
 	rm -rf /usr/lib/gcc/$(gcc -dumpmachine)/10.2.0/include-fixed/bits/
 	chown -v -R root:root \
 		/usr/lib/gcc/*linux-gnu/10.2.0/include{,-fixed}
-	ln -sv ../usr/bin/cpp /lib
+	ln -svf ../usr/bin/cpp /lib
 	install -v -dm755 /usr/lib/bfd-plugins
 	ln -sfv ../../libexec/gcc/$(gcc -dumpmachine)/10.2.0/liblto_plugin.so \
 		/usr/lib/bfd-plugins/
@@ -484,7 +488,7 @@ pushd pkg-config-0.29.2
 		--disable-host-tool        \
 		--docdir=/usr/share/doc/pkg-config-0.29.2
 	make
-	make check
+#	make check
 	make install
 popd
 
@@ -496,10 +500,10 @@ pushd ncurses-6.2
 	./configure --prefix=/usr           \
 		--mandir=/usr/share/man \
 		--with-shared           \
-        --without-debug         \
-        --without-normal        \
-        --enable-pc-files       \
-        --enable-widec
+		--without-debug         \
+		--without-normal        \
+		--enable-pc-files       \
+		--enable-widec
 	make
 	make install
 	mv -v /usr/lib/libncursesw.so.6* /lib
@@ -524,7 +528,7 @@ pushd sed-4.8
 	make
 	make html
 	chown -Rv tester .
-	su tester -c "PATH=$PATH make check"
+#	su tester -c "PATH=$PATH make check"
 	make install
 	install -d -m755           /usr/share/doc/sed-4.8
 	install -m644 doc/sed.html /usr/share/doc/sed-4.8
@@ -550,7 +554,7 @@ pushd gettext-0.21
 		--disable-static \
         --docdir=/usr/share/doc/gettext-0.21
 	make
-	make check
+#	make check
 	make install
 	chmod -v 0755 /usr/lib/preloadable_libintl.so
 popd
@@ -561,7 +565,7 @@ print_pck_and_dezip bison-3.7.1.tar.xz
 pushd bison-3.7.1
 	./configure --prefix=/usr --docdir=/usr/share/doc/bison-3.7.1
 	make
-	make check
+#	make check
 	make install
 popd
 
@@ -571,7 +575,7 @@ print_pck_and_dezip grep-3.4.tar.xz
 pushd grep-3.4
 	./configure --prefix=/usr --bindir=/bin
 	make
-	make check
+#	make check
 	make install
 popd
 
@@ -594,7 +598,7 @@ EOF
 	mv -vf /usr/bin/bash /bin
 	exec /bin/bash --login +h
 popd
-
+}
 
 rm -rf libtool-2.4.6
 print_pck_and_dezip libtool-2.4.6.tar.xz
@@ -602,7 +606,7 @@ print_pck_and_dezip libtool-2.4.6.tar.xz
 pushd libtool-2.4.6
 	./configure --prefix=/usr
 	make
-	make check
+#	make check
 	make install
 popd
 
@@ -615,7 +619,7 @@ pushd gdbm-1.18.1
 		--disable-static \
         --enable-libgdbm-compat
 	make
-	make check
+#	make check
 	make install
 popd
 
@@ -625,7 +629,7 @@ print_pck_and_dezip gperf-3.1.tar.gz
 pushd gperf-3.1
 	./configure --prefix=/usr --docdir=/usr/share/doc/gperf-3.1
 	make
-	make -j1 check
+#	make -j1 check
 	make install
 popd
 
@@ -638,7 +642,7 @@ pushd expat-2.2.9
 		--disable-static \
 		--docdir=/usr/share/doc/expat-2.2.9
 	make
-	make check
+#	make check
 	make install
 	install -v -m644 doc/*.{html,png,css} /usr/share/doc/expat-2.2.9
 popd
@@ -651,14 +655,14 @@ pushd inetutils-1.9.4
 	./configure --prefix=/usr        \
 		--localstatedir=/var \
 		--disable-logger     \
-        --disable-whois      \
-        --disable-rcp        \
-        --disable-rexec      \
-        --disable-rlogin     \
-        --disable-rsh        \
+		--disable-whois      \
+		--disable-rcp        \
+		--disable-rexec      \
+		--disable-rlogin     \
+		--disable-rsh        \
 		--disable-servers
 	make
-	make check
+#	make check
 	make install
 	mv -v /usr/bin/{hostname,ping,ping6,traceroute} /bin
 	mv -v /usr/bin/ifconfig /sbin
@@ -687,7 +691,7 @@ pushd perl-5.32.0
 		-Duseshrplib                                 \
 		-Dusethreads
 	make
-	make test
+#	make test
 	make install
 	unset BUILD_ZLIB BUILD_BZIP2
 popd
@@ -699,7 +703,7 @@ print_pck_and_dezip XML-Parser-2.46.tar.gz
 pushd XML-Parser-2.46
 	perl Makefile.PL
 	make
-	make test
+#	make test
 	make install
 popd
 
@@ -710,7 +714,7 @@ pushd intltool-0.51.0
 	sed -i 's:\\\${:\\\$\\{:' intltool-update.in
 	./configure --prefix=/usr
 	make
-	make check
+#	make check
 	make install
 	install -v -Dm644 doc/I18N-HOWTO /usr/share/doc/intltool-0.51.0/I18N-HOWTO
 popd
@@ -722,7 +726,7 @@ pushd autoconf-2.69
 	sed -i '361 s/{/\\{/' bin/autoscan.in
 	./configure --prefix=/usr
 	make
-	make check
+#	make check
 	make install
 popd
 
@@ -733,7 +737,7 @@ pushd automake-1.16.2
 	sed -i "s/''/etags/" t/tags-lisp-space.sh
 	./configure --prefix=/usr --docdir=/usr/share/doc/automake-1.16.2
 	make
-	make -j4 check
+#	make -j4 check
 	make install
 popd
 
@@ -762,7 +766,7 @@ print_pck_and_dezip elfutils-0.180.tar.bz2
 pushd elfutils-0.180
 	./configure --prefix=/usr --disable-debuginfod --libdir=/lib
 	make
-	make check
+#	make check
 	make -C libelf install
 	install -vm644 config/libelf.pc /usr/lib/pkgconfig
 	rm /lib/libelf.a
@@ -775,7 +779,7 @@ print_pck_and_dezip libffi-3.3.tar.gz
 pushd libffi-3.3
 	./configure --prefix=/usr --disable-static --with-gcc-arch=native
 	make
-	make check
+#	make check
 	make install
 popd
 
@@ -790,7 +794,7 @@ pushd openssl-1.1.1g
         shared                \
         zlib-dynamic
 	make
-	make test
+#	make test
 	sed -i '/INSTALL_LIBS/s/libcrypto.a libssl.a//' Makefile
 	make MANSUFFIX=ssl install
 	mv -v /usr/share/doc/openssl /usr/share/doc/openssl-1.1.1g
@@ -866,7 +870,7 @@ pushd coreutils-8.32
 	make NON_ROOT_USERNAME=tester check-root
 	echo "dummy:x:102:tester" >> /etc/group
 	chown -Rv tester .
-	su tester -c "PATH=$PATH make RUN_EXPENSIVE_TESTS=yes check"
+#	su tester -c "PATH=$PATH make RUN_EXPENSIVE_TESTS=yes check"
 	sed -i '/dummy/d' /etc/group
 	make install
 	mv -v /usr/bin/{cat,chgrp,chmod,chown,cp,date,dd,df,echo} /bin
@@ -884,7 +888,7 @@ print_pck_and_dezip check-0.15.2.tar.gz
 pushd check-0.15.2
 	./configure --prefix=/usr --disable-static
 	make
-	make check
+#	make check
 	make docdir=/usr/share/doc/check-0.15.2 install
 popd
 
@@ -894,7 +898,7 @@ print_pck_and_dezip diffutils-3.7.tar.xz
 pushd diffutils-3.7
 	./configure --prefix=/usr
 	make
-	make check
+#	make check
 	make install
 popd
 
@@ -905,9 +909,9 @@ pushd gawk-5.1.0
 	sed -i 's/extras//' Makefile.in
 	./configure --prefix=/usr
 	make
-	make check
+#	make check
 	make install
-	mkdir -v /usr/share/doc/gawk-5.1.0
+	mkdir -vf /usr/share/doc/gawk-5.1.0
 	cp -v doc/{awkforai.txt,*.{eps,pdf,jpg}} /usr/share/doc/gawk-5.1.0
 popd
 
@@ -919,7 +923,7 @@ pushd findutils-4.7.0
 	./configure --prefix=/usr --localstatedir=/var/lib/locate
 	make
 	chown -Rv tester .
-	su tester -c "PATH=$PATH make check"
+#	su tester -c "PATH=$PATH make check"
 	make install
 	mv -v /usr/bin/find /bin
 	sed -i 's|find:=${BINDIR}|find:=/bin|' /usr/bin/updatedb
@@ -964,7 +968,7 @@ print_pck_and_dezip gzip-1.10.tar.xz
 pushd gzip-1.10
 	./configure --prefix=/usr
 	make
-	make check
+#	make check
 	make install
 	mv -v /usr/bin/gzip /bin
 popd
@@ -990,10 +994,10 @@ pushd kbd-2.3.0
 	sed -i 's/resizecons.8 //' docs/man/man8/Makefile.in
 	./configure --prefix=/usr --disable-vlock
 	make
-	make check
+#	make check
 	make install
 	rm -v /usr/lib/libtswrap.{a,la,so*}
-	mkdir -v            /usr/share/doc/kbd-2.3.0
+	mkdir -vf            /usr/share/doc/kbd-2.3.0
 	cp -R -v docs/doc/* /usr/share/doc/kbd-2.3.0
 popd
 
@@ -1003,7 +1007,7 @@ print_pck_and_dezip libpipeline-1.5.3.tar.gz
 pushd libpipeline-1.5.3
 	./configure --prefix=/usr
 	make
-	make check
+#	make check
 	make install
 popd
 
@@ -1014,7 +1018,7 @@ print_pck_and_dezip make-4.3.tar.gz
 pushd make-4.3
 	./configure --prefix=/usr
 	make
-	make check
+#	make check
 	make install
 popd
 
@@ -1025,7 +1029,7 @@ print_pck_and_dezip patch-2.7.6.tar.xz
 pushd patch-2.7.6
 	./configure --prefix=/usr
 	make
-	make check
+#	make check
 	make install
 popd
 
@@ -1044,7 +1048,7 @@ pushd man-db-2.9.3
         --with-vgrind=/usr/bin/vgrind        \
         --with-grap=/usr/bin/grap
 	make
-	make check
+#	make check
 	make install
 popd
 
@@ -1057,7 +1061,7 @@ pushd tar-1.32
 		./configure --prefix=/usr \
 		--bindir=/bin
 	make
-	make check
+#	make check
 	make install
 	make -C doc install-html docdir=/usr/share/doc/tar-1.32
 popd
@@ -1068,7 +1072,7 @@ print_pck_and_dezip texinfo-6.7.tar.xz
 pushd texinfo-6.7
 	./configure --prefix=/usr --disable-static
 	make
-	make check
+#	make check
 	make install
 	make TEXMF=/usr/share/texmf install-tex
 	pushd /usr/share/info
@@ -1191,7 +1195,7 @@ pushd procps-ng-3.3.16
 		--disable-kill                           \
 		--with-systemd
 	make
-	make check
+#	make check
 	make install
 	mv -v /usr/lib/libprocps.so.* /lib
 	ln -sfv ../../lib/$(readlink /usr/lib/libprocps.so) /usr/lib/libprocps.so
@@ -1216,7 +1220,7 @@ pushd util-linux-2.36
 		--without-python
 	make
 	chown -Rv tester .
-	su tester -c "make -k check"
+#	su tester -c "make -k check"
 	make install
 popd
 
@@ -1237,7 +1241,7 @@ pushd e2fsprogs-1.45.6
 		--disable-uuidd         \
 		--disable-fsck
 	make
-	make check
+#	make check
 	make install
 	chmod -v u+w /usr/lib/{libcom_err,libe2p,libext2fs,libss}.a
 	gunzip -v /usr/share/info/libext2fs.info.gz
