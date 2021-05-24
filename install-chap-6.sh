@@ -2,8 +2,6 @@
 
 set -e
 
-coucou() {
-
 echo "Binutils"
 tar -xf binutils-2.36.1.tar.xz
 pushd binutils-2.36.1
@@ -45,11 +43,10 @@ popd
 
 echo "glibc"
 tar -xf glibc-2.33.tar.xz
-
 pushd glibc-2.33
 	ln -sfv ../../lib/ld-linux-x86-64.so.2 $LFS/lib64
 	ln -sfv ../../lib/ld-linux-x86-64.so.2 $LFS/lib64/ld-lsb-x86-64.so.3
-	patch -Np1 -i ../glibc-2.33-fhs-1.patch
+	patch -Np1 -i ../glibc-2.32-fhs-1.patch
 	mkdir -p build && cd build
 	../configure --prefix=/usr --host=$LFS_TGT --build=$(../scripts/config.guess) --enable-kernel=3.2 --with-headers=$LFS/usr/include libc_cv_slibdir=/lib
 	make
@@ -142,8 +139,8 @@ pushd file-5.39
 popd
 
 echo "findutils"
-tar -xf findutils-4.8.0.tar.xz
-pushd findutils-4.8.0
+tar -xf findutils-4.7.0.tar.xz
+pushd findutils-4.7.0
 	./configure --prefix=/usr --host=$LFS_TGT --build=$(build-aux/config.guess)
 	make
 	make DESTDIR=$LFS install
@@ -161,8 +158,8 @@ pushd gawk-5.1.0
 popd
 
 echo "grep"
-tar -xf grep-3.6.tar.xz
-pushd grep-3.6
+tar -xf grep-3.4.tar.xz
+pushd grep-3.4
 	./configure --prefix=/usr --host=$LFS_TGT --bindir=/bin
 	make
 	make DESTDIR=$LFS install
@@ -232,9 +229,8 @@ pushd xz-5.2.5
 	ln -svf ../../lib/$(readlink $LFS/usr/lib/liblzma.so) \
 		$LFS/usr/lib/liblzma.so
 popd
-}
+
 echo "binutils"
-rm -rf binutils-2.36.1
 tar -xf binutils-2.36.1.tar.xz
 pushd binutils-2.36.1
 	mkdir -p build && cd build
